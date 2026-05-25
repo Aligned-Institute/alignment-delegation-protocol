@@ -1,0 +1,13 @@
+{
+    "model": "mistralai/Mistral-7B-Instruct-v0.3",
+    "auroc": 0.66,
+    "mean_auroc": 0.66,
+    "std_auroc": 0.12,
+    "h_neuron_count": 5,
+    "total_neurons": 131072,
+    "h_neuron_fraction": 0.0038,
+    "fold_scores": [0.8, 0.5, 0.8, 0.6, 0.6],
+    "threshold": 0.45,
+    "dataset": "TriviaQA (50 items: 25 faithful / 25 hallucinatory)",
+    "quantization": "4-bit NF4"
+}

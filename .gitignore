@@ -1,0 +1,12 @@
+.DS_Store
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.egg-info/
+dist/
+build/
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+Kaggle-report.rtf
+Schmidt-Pilot.ipynb

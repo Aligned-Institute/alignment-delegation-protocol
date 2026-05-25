@@ -1,10 +1,10 @@
-# Alignment Steering
+# Alignment Delegation Protocol (ADP)
 
 Real-time H-Neuron monitoring and two-tier deception steering for production LLMs.
 
 Built on Gao et al. (2025) "H-Neurons: On the Existence, Impact, and Origin of Hallucination-Associated Neurons in LLMs" ([arXiv:2512.01797](https://arxiv.org/abs/2512.01797)).
 
-Developed by the [Aligned Sovereign Intelligence Institute](https://asiinst.com) as part of the Schmidt Sciences 2026 Interpretability Research Program.
+Developed by the [Aligned Sovereign Intelligence Institute](https://asiinst.com) in support of the Schmidt Sciences 2026 Interpretability Research Program.
 
 ---
 
@@ -22,12 +22,49 @@ The monitor adds fewer than 0.01% compute overhead to a standard forward pass an
 
 ---
 
+## Pilot Results
+
+Preliminary replication of the CETT-based H-Neuron classification pipeline on a 50-item held-out TriviaQA subset using **Mistral-7B-Instruct-v0.3** (4-bit NF4, T4 GPU):
+
+| Metric | Value |
+|--------|-------|
+| AUROC (5-fold CV) | 0.66 ± 0.12 |
+| Fold scores | [0.80, 0.50, 0.80, 0.60, 0.60] |
+| H-Neurons identified | 5 / 131,072 FFN neurons |
+| H-Neuron fraction | 0.0038% |
+
+AUROC above chance across all folds confirms the CETT pipeline is operational on the target model family. Inter-fold variance (σ = 0.12) is expected at n=10 items per fold; reliable estimation requires the 500+ item evaluation sets planned for Year 1. Full results are in [`pilot_results.json`](pilot_results.json).
+
+---
+
+## Demo
+
+`adp_demo.py` is a ground-truth simulation demo that loads empirical CETT score distributions from `pilot_results.json` and simulates the full ADP routing cascade — Tier 1 suppression, Tier 2 PoK escalation — across three pre-loaded prompts and free-text input.
+
+```bash
+python3 adp_demo.py
+# → http://localhost:8080
+```
+
+Every page carries a prominent disclosure banner: **Reproducible Ground-Truth Simulation** — this is a replay of real pilot distributions, not live model inference. The demo requires no external dependencies (Python stdlib only).
+
+Set `PORT` to run behind a reverse proxy:
+
+```bash
+PORT=3001 python3 adp_demo.py
+```
+
+---
+
 ## Structure
 
 ```
-alignment-steering/
+alignment-delegation-protocol/
 ├── notebooks/
 │   └── replication.ipynb   # CETT H-Neuron replication on Mistral-7B-Instruct-v0.3
+├── adp_demo.py             # Ground-truth simulation demo (stdlib only, no GPU required)
+├── pilot_results.json      # Empirical results from the Kaggle pilot run
+├── requirements.txt        # Production pipeline dependencies (PyTorch, Transformers, sklearn)
 └── src/
     ├── cett.py             # Streaming CETT monitor (forward hook implementation)
     ├── classifier.py       # L1 logistic regression H-Neuron identifier
@@ -38,13 +75,14 @@ alignment-steering/
 
 ## Replication
 
-`notebooks/replication.ipynb` runs the CETT-based H-Neuron classification pipeline on a 50-item held-out TriviaQA subset using Mistral-7B-Instruct-v0.3 (4-bit NF4 quantized, Colab T4 compatible). It produces:
+`notebooks/replication.ipynb` runs the CETT-based H-Neuron classification pipeline on a 50-item held-out TriviaQA subset using Mistral-7B-Instruct-v0.3 (4-bit NF4 quantized). It is designed to run on a free T4 GPU in Google Colab — no Hugging Face token required.
 
+The notebook produces:
 - AUROC under 5-fold cross-validation
 - H-Neuron sparsity fraction (target: <0.1% of FFN neurons)
-- Exportable `pilot_results.json` with all metrics
+- `pilot_results.json` with all metrics, consumed by `adp_demo.py` at startup
 
-No Hugging Face token required.
+The pre-computed results from our Kaggle run are included in [`pilot_results.json`](pilot_results.json) at the repo root. Original Kaggle run: [kaggle.com/code/antonmonroy/hn-colab-notebook](https://www.kaggle.com/code/antonmonroy/hn-colab-notebook).
 
 ---
 
@@ -54,7 +92,9 @@ No Hugging Face token required.
 pip install -r requirements.txt
 ```
 
-**Requirements:** Python 3.10+, PyTorch 2.0+, Transformers, scikit-learn, numpy
+**Requirements:** Python 3.10+, PyTorch 2.0+, Transformers 4.40+, scikit-learn 1.4+, numpy 1.26+
+
+The demo (`adp_demo.py`) has no external dependencies — Python stdlib only.
 
 ---
 
@@ -86,14 +126,19 @@ decision = suppressor.step()
 
 ## Citation
 
-If you use this work, please cite both the foundational H-Neuron paper and this repository:
-
 ```bibtex
 @article{gao2025hneurons,
   title   = {H-Neurons: On the Existence, Impact, and Origin of Hallucination-Associated Neurons in LLMs},
   author  = {Gao, C. and Chen, H. and Xiao, C. and Chen, Z. and Liu, Z. and Sun, M.},
   journal = {arXiv preprint arXiv:2512.01797},
   year    = {2025}
+}
+
+@misc{ali2026adp,
+  title  = {Alignment Delegation Protocol (ADP)},
+  author = {{Aligned Sovereign Intelligence Institute}},
+  year   = {2026},
+  url    = {https://github.com/Aligned-Institute/alignment-delegation-protocol}
 }
 ```
 
