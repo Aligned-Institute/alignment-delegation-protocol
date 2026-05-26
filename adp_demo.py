@@ -1115,21 +1115,6 @@ def _page_foot() -> str:
 
 
 def render_home() -> str:
-    pass_prompts  = [p for p in DEMO_PROMPTS if p["expected_tier"] == "PASS"]
-    tier1_prompts = [p for p in DEMO_PROMPTS if p["expected_tier"] == "TIER1"]
-    tier2_prompts = [p for p in DEMO_PROMPTS if p["expected_tier"] == "TIER2"]
-    shown = [random.choice(pass_prompts), random.choice(tier1_prompts), random.choice(tier2_prompts)]
-    random.shuffle(shown)
-
-    prompt_cards = ""
-    for p in shown:
-        prompt_cards += f"""
-        <a href="/run?id={p['id']}" style="text-decoration:none;">
-          <div class="prompt-card" style="border-color:var(--border);background:var(--surface);">
-            <div style="font-size:14px;font-style:italic;color:var(--text);">"{p['prompt']}"</div>
-          </div>
-        </a>"""
-
     domain_buttons = ""
     for slug, cat in DOMAIN_CATEGORIES.items():
         domain_buttons += f'<a href="/domain?cat={slug}" class="domain-btn">{cat["emoji"]} {cat["label"]}</a>'
@@ -1191,16 +1176,11 @@ def render_home() -> str:
   </div>
 
   <div class="card">
-    <h3>Browse by Domain</h3>
+    <h3>Select a Domain</h3>
     <div class="domain-grid">{domain_buttons}</div>
     <p style="font-size:12px;color:var(--muted);margin-top:12px;">
       Select a domain to browse labeled scenarios.
     </p>
-  </div>
-
-  <div class="card">
-    <h3>Choose a Sample Scenario <span style="font-size:12px;font-weight:normal;color:var(--muted);">(refreshes with each page load)</span></h3>
-    {prompt_cards}
   </div>
 
   <div class="card">
