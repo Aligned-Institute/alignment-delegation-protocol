@@ -1137,6 +1137,14 @@ def render_home() -> str:
   {_DISCLOSURE_BANNER}
 
   <div class="card">
+    <h3>Select a Domain</h3>
+    <div class="domain-grid">{domain_buttons}</div>
+    <p style="font-size:12px;color:var(--muted);margin-top:12px;">
+      Select a domain to browse labeled scenarios.
+    </p>
+  </div>
+
+  <div class="card">
     <h3>Pilot Metrics</h3>
     <table>
       <tr><th>Metric</th><th>Value</th><th>Notes</th></tr>
@@ -1173,14 +1181,6 @@ def render_home() -> str:
       <span class="tier-pill tier-t1 label-t1">⚠️ TIER 1 — CoT self-verification</span>
       <span class="tier-pill tier-t2 label-t2">🔴 TIER 2 — PoK routing</span>
     </div>
-  </div>
-
-  <div class="card">
-    <h3>Select a Domain</h3>
-    <div class="domain-grid">{domain_buttons}</div>
-    <p style="font-size:12px;color:var(--muted);margin-top:12px;">
-      Select a domain to browse labeled scenarios.
-    </p>
   </div>
 
   <div class="card">
