@@ -124,6 +124,38 @@ decision = suppressor.step()
 
 ---
 
+## Team
+
+**Lead Principal Investigator**
+Dr. Mahault Albarracin — Chief Science Officer and Research Board Chairwoman, Aligned Sovereign Intelligence Institute; Senior Research Scientist, VERSES AI; Adjunct Professor, UQAM
+PhD, Cognitive Science and Explainable AI. Pioneer in active inference frameworks for multi-agent systems. Leads the interpretability research program and the mechanistic H-Neuron classification pipeline.
+[Google Scholar](https://scholar.google.com/citations?user=KAxZtUIAAAAJ&hl=en)
+
+**Co-Principal Investigator / Operational Lead**
+Anthony Monroy — Founder & CEO, Aligned Sovereign Intelligence Institute
+
+**Co-Investigator — Neuroscience & AI Alignment**
+Dr. Gabriel Axel Montes — Sr. Research Board Member, Aligned Sovereign Intelligence Institute
+PhD, Neuroscience and Cognitive Science. Expert in computational neuroscience and path-sensitive AI alignment.
+[Google Scholar](https://scholar.google.com/citations?user=gnFjufcAAAAJ)
+
+**Co-Investigator — Governance**
+Dr. Sarah Grace Manski — Chief Operating Officer, Aligned Sovereign Intelligence Institute
+PhD, Global Studies (UC Santa Barbara). Former Assistant Professor, George Mason University. Strategic AI Advisor to the Pentagon and White House.
+[Google Scholar](https://scholar.google.com/citations?user=StP0jQ0AAAAJ&hl=en)
+
+**Co-Investigator — Applications & Technical Implementation**
+Dr. Reza Nourmohammadi — Postdoctoral Researcher, University of British Columbia
+PhD, École de Technologie Supérieure (ÉTS). Research: privacy-preserving federated learning, zero-knowledge proofs, trustworthy AI systems.
+[Google Scholar](https://scholar.google.com/citations?user=SWles1IAAAAJ&hl=en) · [LinkedIn](https://www.linkedin.com/in/reza-nourmohammadi/)
+
+**Advisor (pending confirmation)**
+Dr. Bo Li — Abbasi Associate Professor, University of Illinois Urbana-Champaign; CAIS Advisor; CEO & Co-Founder, Virtue AI; Advisor to the U.S. and U.K. AI Safety Institutes (AISI). ~59,000+ citations, h-index 110.
+[Google Scholar](https://scholar.google.com/citations?hl=en&user=K8vJkTcAAAAJ)
+
+
+---
+
 ## Citation
 
 ```bibtex

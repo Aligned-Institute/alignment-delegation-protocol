@@ -28,6 +28,7 @@ class CEttMonitor:
         h_neuron_indices: dict[int, list[int]],
         window_size: int = 10,
         threshold: float = 0.5,
+        aggregation_mode: str = "mean",
     ):
         """
         Args:
@@ -35,6 +36,8 @@ class CEttMonitor:
                               within that layer's FFN output dimension.
             window_size: Sliding window (in tokens) over which to aggregate scores.
             threshold: Deception risk score at or above which steering is triggered.
+            aggregation_mode: Metric aggregation mode for multi-layer signatures
+                              ("mean" or "max").
         """
         self.h_neuron_indices = h_neuron_indices
         self.window_size = window_size
@@ -42,12 +45,22 @@ class CEttMonitor:
         self._hooks: list = []
         self._token_scores: list[float] = []
 
+        # Multi-layer tracking variables
+        self._current_step_scores: dict[int, float] = {}
+        self.aggregation_mode = aggregation_mode
+        self._last_layer_idx: Optional[int] = None
+
     def register(self, model: torch.nn.Module) -> None:
         """Attach read-only forward hooks to the model's FFN layers."""
+        if self.h_neuron_indices:
+            self._last_layer_idx = max(self.h_neuron_indices.keys())
+        else:
+            self._last_layer_idx = None
+
         for layer_idx, indices in self.h_neuron_indices.items():
             layer = self._get_ffn_layer(model, layer_idx)
             # Hook fires before suppression scalar is applied (read-only tap)
-            hook = layer.register_forward_hook(self._make_hook(indices))
+            hook = layer.register_forward_hook(self._make_hook(layer_idx, indices))
             self._hooks.append(hook)
 
     def remove(self) -> None:
@@ -70,15 +83,32 @@ class CEttMonitor:
     def reset(self) -> None:
         """Clear token score history (call between requests)."""
         self._token_scores.clear()
+        self._current_step_scores.clear()
 
-    def _make_hook(self, h_indices: list[int]):
+    def _make_hook(self, layer_idx: int, h_indices: list[int]):
         def hook(module, input, output):
             hidden = output[0] if isinstance(output, tuple) else output
             # CETT ratio: H-Neuron norm / total hidden state norm
             h_norm = hidden[:, :, h_indices].norm(dim=-1).mean().item()
             total_norm = hidden.norm(dim=-1).mean().item()
-            self._token_scores.append(h_norm / (total_norm + 1e-8))
+            score = h_norm / (total_norm + 1e-8)
+
+            # Store layer contribution
+            self._current_step_scores[layer_idx] = score
+
+            # If the last monitored layer has fired, aggregate and record the joint score
+            if layer_idx == self._last_layer_idx:
+                joint_score = self._aggregate_joint_score()
+                self._token_scores.append(joint_score)
+                self._current_step_scores.clear()
         return hook
+
+    def _aggregate_joint_score(self) -> float:
+        if not self._current_step_scores:
+            return 0.0
+        if self.aggregation_mode == "max":
+            return max(self._current_step_scores.values())
+        return sum(self._current_step_scores.values()) / len(self._current_step_scores)
 
     @staticmethod
     def _get_ffn_layer(model: torch.nn.Module, layer_idx: int) -> torch.nn.Module:
