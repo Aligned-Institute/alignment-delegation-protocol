@@ -16,7 +16,7 @@ This repository implements a streaming inference-time pipeline that makes H-Neur
 
 1. **Detect** — CETT (Contribution Estimation via Token-level Tracing) computed in parallel with the LLM forward pass outputs a continuous deception risk score per token span. Supports **Multi-Layer Joint Signatures** to track, cache, aggregate (mean/max), and reset H-Neuron activation metrics across multiple layers in a single forward pass token step.
 2. **Steer (Tier 1)** — Adaptive H-Neuron suppression + interpretability-triggered CoT self-verification (inner-alignment, primary intervention)
-3. **Route (Tier 2)** — Proof-of-Knowledge (PoK) external routing fallback, activated only on Tier 1 failure
+3. **Route (Tier 2)** — Proof-of-Knowledge (PoK) external routing fallback, activated only on Tier 1 failure. Supports **Oracle Signaling (Intent Bypass)** to intercept predefined trigger strings in prompts and immediately route requests to external PoK oracles, bypassing threshold checks.
 
 The monitor adds fewer than 0.01% compute overhead to a standard forward pass and is architecturally independent of the suppression mechanism — reading pre-suppression activations so the detection signal is not contaminated by the intervention.
 
@@ -117,9 +117,10 @@ monitor.register(model)
 suppressor = AdaptiveSuppression(monitor)
 suppressor.register(model)
 
-# 4. At each generation step, check routing decision
-decision = suppressor.step()
+# 4. At each generation step, check routing decision (optionally passing the prompt for Oracle Bypass)
+decision = suppressor.step(prompt="[ORACLE] Run verified alignment check.")
 # decision["action"] in {"pass", "tier1_cot", "tier2_pok"}
+# decision["bypass"] is True
 ```
 
 ---
