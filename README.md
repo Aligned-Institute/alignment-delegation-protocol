@@ -15,8 +15,9 @@ Large language models harbor a sparse but causally decisive substrate for decept
 This repository implements a streaming inference-time pipeline that makes H-Neuron interpretability actionable in production:
 
 1. **Detect** — CETT (Contribution Estimation via Token-level Tracing) computed in parallel with the LLM forward pass outputs a continuous deception risk score per token span. Supports **Multi-Layer Joint Signatures** to track, cache, aggregate (mean/max), and reset H-Neuron activation metrics across multiple layers in a single forward pass token step.
-2. **Steer (Tier 1)** — Adaptive H-Neuron suppression + interpretability-triggered CoT self-verification (inner-alignment, primary intervention)
-3. **Route (Tier 2)** — Proof-of-Knowledge (PoK) external routing fallback, activated only on Tier 1 failure. Supports **Oracle Signaling (Intent Bypass)** to intercept predefined trigger strings in prompts and immediately route requests to external PoK oracles, bypassing threshold checks.
+2. **Rotate (Moving Target Defense)** — Prevents target models from adapting to and evading static hooks by utilizing **Defensive Probe Rotation** across a pool of distinct `CEttMonitor` instances and measuring **Activation Drift** to flag adversarial evasion.
+3. **Steer (Tier 1)** — Adaptive H-Neuron suppression + interpretability-triggered CoT self-verification (inner-alignment, primary intervention)
+4. **Route (Tier 2)** — Proof-of-Knowledge (PoK) external routing fallback, activated only on Tier 1 failure. Supports **Oracle Signaling (Intent Bypass)** to intercept predefined trigger strings in prompts and immediately route requests to external PoK oracles, bypassing threshold checks.
 
 The monitor adds fewer than 0.01% compute overhead to a standard forward pass and is architecturally independent of the suppression mechanism — reading pre-suppression activations so the detection signal is not contaminated by the intervention.
 
@@ -68,6 +69,7 @@ alignment-delegation-protocol/
 └── src/
     ├── cett.py             # Streaming CETT monitor (forward hook implementation with Multi-Layer Joint Signatures support)
     ├── classifier.py       # L1 logistic regression H-Neuron identifier
+    ├── rotation.py         # Defensive Probe Rotator (Moving Target Defense & Activation Drift check)
     └── suppression.py      # Adaptive α suppression + two-tier routing controller
 ```
 
@@ -121,6 +123,16 @@ suppressor.register(model)
 decision = suppressor.step(prompt="[ORACLE] Run verified alignment check.")
 # decision["action"] in {"pass", "tier1_cot", "tier2_pok"}
 # decision["bypass"] is True
+
+# 5. Optional: Manage a pool of monitors under a Moving Target Defense (MTD) setup
+from src.rotation import ProbeRotator
+rotator = ProbeRotator([monitor_a, monitor_b])
+rotator.register_all(model)
+# Calculate activation drift (Mean Absolute Deviation) across probes to detect evasion
+drift = rotator.get_drift()
+evasion_detected = rotator.check_evasion(drift_threshold=0.25)
+# Periodically or per-request rotate the active evaluator
+rotator.rotate()
 ```
 
 ---
