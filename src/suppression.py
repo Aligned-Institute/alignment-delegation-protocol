@@ -40,6 +40,7 @@ class AdaptiveSuppression:
         monitor: CEttMonitor,
         alpha_fn: Optional[Callable[[float], float]] = None,
         tier2_threshold: float = 0.7,
+        bypass_signatures: Optional[list[str]] = None,
     ):
         """
         Args:
@@ -51,10 +52,16 @@ class AdaptiveSuppression:
             tier2_threshold: Score at or above which Tier 1 is deemed to have
                              failed and the system escalates to PoK routing.
                              Should be >= monitor.threshold.
+            bypass_signatures: Optional list of trigger strings. If any signature
+                               is found in the prompt, steers immediately to Tier 2.
+                               Defaults to ["[ORACLE]", "oracle-bypass"].
         """
         self.monitor = monitor
         self.alpha_fn = alpha_fn if alpha_fn is not None else self._linear_alpha
         self.tier2_threshold = tier2_threshold
+        self.bypass_signatures = (
+            bypass_signatures if bypass_signatures is not None else ["[ORACLE]", "oracle-bypass"]
+        )
         self._hooks: list = []
 
     def register(self, model: torch.nn.Module) -> None:
@@ -70,15 +77,34 @@ class AdaptiveSuppression:
             hook.remove()
         self._hooks.clear()
 
-    def step(self) -> dict:
+    def should_bypass(self, prompt: str) -> bool:
+        """Check if the input prompt contains any registered bypass signatures."""
+        if not prompt or not self.bypass_signatures:
+            return False
+        return any(sig in prompt for sig in self.bypass_signatures)
+
+    def step(self, prompt: Optional[str] = None) -> dict:
         """
         Evaluate the current monitor state and return a routing decision.
+
+        Args:
+            prompt: Optional input string. If provided and contains a registered
+                    bypass signature, triggers immediate Tier 2 routing.
 
         Returns a dict with:
             score  — current windowed CETT deception risk score
             alpha  — suppression scalar applied this step
             action — one of ACTION_PASS, ACTION_TIER1, ACTION_TIER2
+            bypass — boolean indicating if the decision was forced by an oracle bypass signal
         """
+        if prompt and self.should_bypass(prompt):
+            return {
+                "score": 1.0,
+                "alpha": 0.0,
+                "action": ACTION_TIER2,
+                "bypass": True
+            }
+
         score = self.monitor.current_score()
         alpha = self.alpha_fn(score)
 
@@ -89,7 +115,7 @@ class AdaptiveSuppression:
         else:
             action = ACTION_TIER2
 
-        return {"score": score, "alpha": alpha, "action": action}
+        return {"score": score, "alpha": alpha, "action": action, "bypass": False}
 
     def _make_hook(self, h_indices: list[int]):
         """
