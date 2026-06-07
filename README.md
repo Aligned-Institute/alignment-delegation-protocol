@@ -132,7 +132,7 @@ PhD, Cognitive Science and Explainable AI. Pioneer in active inference framework
 [Google Scholar](https://scholar.google.com/citations?user=KAxZtUIAAAAJ&hl=en)
 
 **Co-Principal Investigator / Operational Lead**
-Anthony Monroy — Founder & CEO, Aligned Sovereign Intelligence Institute
+Anthony Monroy — Founder & EC, Aligned Sovereign Intelligence Institute. [LinkedIn](https://www.linkedin.com/in/adoftx/)
 
 **Co-Investigator — Neuroscience & AI Alignment**
 Dr. Gabriel Axel Montes — Sr. Research Board Member, Aligned Sovereign Intelligence Institute
@@ -147,7 +147,7 @@ PhD, Global Studies (UC Santa Barbara). Former Assistant Professor, George Mason
 **Co-Investigator — Applications & Technical Implementation**
 Dr. Reza Nourmohammadi — Postdoctoral Researcher, University of British Columbia
 PhD, École de Technologie Supérieure (ÉTS). Research: privacy-preserving federated learning, zero-knowledge proofs, trustworthy AI systems.
-[Google Scholar](https://scholar.google.com/citations?user=SWles1IAAAAJ&hl=en) · [LinkedIn](https://www.linkedin.com/in/reza-nourmohammadi/)
+[Google Scholar](https://scholar.google.com/citations?user=SWles1IAAAAJ&hl=en) 
 
 **Advisor (pending confirmation)**
 Dr. Bo Li — Abbasi Associate Professor, University of Illinois Urbana-Champaign; CAIS Advisor; CEO & Co-Founder, Virtue AI; Advisor to the U.S. and U.K. AI Safety Institutes (AISI). ~59,000+ citations, h-index 110.
