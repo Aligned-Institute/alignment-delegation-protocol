@@ -132,7 +132,7 @@ PhD, Cognitive Science and Explainable AI. Pioneer in active inference framework
 [Google Scholar](https://scholar.google.com/citations?user=KAxZtUIAAAAJ&hl=en)
 
 **Co-Principal Investigator / Operational Lead**
-Anthony Monroy — Founder & EC, Aligned Sovereign Intelligence Institute. [LinkedIn](https://www.linkedin.com/in/adoftx/)
+Anthony Monroy — EC & Chief Architect, Aligned Sovereign Intelligence Institute. [LinkedIn](https://www.linkedin.com/in/adoftx/)
 
 **Co-Investigator — Neuroscience & AI Alignment**
 Dr. Gabriel Axel Montes — Sr. Research Board Member, Aligned Sovereign Intelligence Institute
