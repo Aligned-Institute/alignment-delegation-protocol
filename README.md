@@ -21,6 +21,10 @@ This repository implements a streaming inference-time pipeline that makes H-Neur
 
 The monitor adds fewer than 0.01% compute overhead to a standard forward pass and is architecturally independent of the suppression mechanism — reading pre-suppression activations so the detection signal is not contaminated by the intervention.
 
+<p align="center">
+  <img src="visuals/adp_architecture_mtd.png" alt="Alignment Delegation Protocol with Moving Target Defense" width="800">
+</p>
+
 ---
 
 ## Pilot Results
