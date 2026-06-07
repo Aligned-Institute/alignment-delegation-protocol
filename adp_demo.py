@@ -87,6 +87,8 @@ _PILOT_LOADED_FROM_FILE = PILOT["source"] != "fallback_estimates"
 def _load_png_uri(filename: str) -> str:
     candidates = [
         os.path.join(os.path.dirname(__file__), filename),
+        os.path.join(os.path.dirname(__file__), "visuals", filename),
+        os.path.join(os.path.dirname(__file__), "Visuals", filename),
         os.path.join(os.path.dirname(__file__), "..", filename),
     ]
     for path in candidates:
