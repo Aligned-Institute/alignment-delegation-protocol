@@ -14,7 +14,7 @@ Large language models harbor a sparse but causally decisive substrate for decept
 
 This repository implements a streaming inference-time pipeline that makes H-Neuron interpretability actionable in production:
 
-1. **Detect** — CETT (Contribution Estimation via Token-level Tracing) computed in parallel with the LLM forward pass outputs a continuous deception risk score per token span
+1. **Detect** — CETT (Contribution Estimation via Token-level Tracing) computed in parallel with the LLM forward pass outputs a continuous deception risk score per token span. Supports **Multi-Layer Joint Signatures** to track, cache, aggregate (mean/max), and reset H-Neuron activation metrics across multiple layers in a single forward pass token step.
 2. **Steer (Tier 1)** — Adaptive H-Neuron suppression + interpretability-triggered CoT self-verification (inner-alignment, primary intervention)
 3. **Route (Tier 2)** — Proof-of-Knowledge (PoK) external routing fallback, activated only on Tier 1 failure
 
@@ -66,7 +66,7 @@ alignment-delegation-protocol/
 ├── pilot_results.json      # Empirical results from the Kaggle pilot run
 ├── requirements.txt        # Production pipeline dependencies (PyTorch, Transformers, sklearn)
 └── src/
-    ├── cett.py             # Streaming CETT monitor (forward hook implementation)
+    ├── cett.py             # Streaming CETT monitor (forward hook implementation with Multi-Layer Joint Signatures support)
     ├── classifier.py       # L1 logistic regression H-Neuron identifier
     └── suppression.py      # Adaptive α suppression + two-tier routing controller
 ```
@@ -109,8 +109,8 @@ from src.suppression import AdaptiveSuppression
 clf = HNeuronClassifier(C=0.01)
 result = clf.fit(X_cett, y_labels, layer_sizes={16: 14336})
 
-# 2. Attach streaming monitor to model
-monitor = CEttMonitor(h_neuron_indices=result.h_neuron_indices, threshold=0.5)
+# 2. Attach streaming monitor to model (supporting mean or max aggregation)
+monitor = CEttMonitor(h_neuron_indices=result.h_neuron_indices, threshold=0.5, aggregation_mode="mean")
 monitor.register(model)
 
 # 3. Attach adaptive suppression + routing controller
